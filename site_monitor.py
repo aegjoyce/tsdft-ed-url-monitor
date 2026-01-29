@@ -143,9 +143,9 @@ def main():
 
             state[url] = {
                 "last_checked": datetime.utcnow().isoformat(),
-                "hash": None,
-                "text": None,
-                "http_status": result.get("http_status"),
+                "hash": result["hash"],
+                "text": result["text"],
+                "http_status": result["http_status"],
             }
 
         else:
