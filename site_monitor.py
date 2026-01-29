@@ -108,41 +108,50 @@ def check_site(url, previous):
             "Connection": "keep-alive",
         }
 
-        # Fetch the page
+        # GET request (follows redirects by default)
         r = requests.get(url, headers=headers, timeout=TIMEOUT)
         status = r.status_code
+        final_url = r.url
 
-        # Handle non-200 responses
+        # Handle common HTTP errors
         if status == 403:
-            return {"status": "RESTRICTED", "http_status": status}
+            return {"status": "RESTRICTED", "http_status": status, "final_url": final_url}
+        elif status in (404, 410):
+            return {"status": "NOT_FOUND", "http_status": status, "final_url": final_url}
         elif status != 200:
-            return {"status": "BROKEN", "http_status": status}
+            return {"status": "BROKEN", "http_status": status, "final_url": final_url}
 
-        # Determine if it's a PDF
+        # Detect content type
         content_type = r.headers.get("Content-Type", "").lower()
-        is_pdf = "application/pdf" in content_type
 
-        if is_pdf:
-            # Extract text from PDF
+        # PDF handling
+        if "application/pdf" in content_type:
             import io
             from PyPDF2 import PdfReader
 
             f = io.BytesIO(r.content)
             reader = PdfReader(f)
             cleaned = "\n".join(page.extract_text() or "" for page in reader.pages)
-        else:
-            # Clean HTML normally
+
+        # HTML handling
+        elif "text/html" in content_type or "application/xhtml+xml" in content_type:
             cleaned = clean_text(r.text)
+
+        # Unsupported / binary content
+        else:
+            return {
+                "status": "BINARY",
+                "http_status": status,
+                "final_url": final_url,
+                "hash": None,
+                "text": None
+            }
 
         # Compute hash
         current_hash = text_hash(cleaned)
 
-        # Determine if content changed
-        changed = (
-            previous
-            and previous.get("hash")
-            and current_hash != previous["hash"]
-        )
+        # Check if content changed
+        changed = previous and previous.get("hash") and current_hash != previous["hash"]
 
         # Save diff if previous text exists
         diff_file = None
@@ -156,6 +165,8 @@ def check_site(url, previous):
             "text": cleaned,
             "changed": changed,
             "diff_file": diff_file,
+            "final_url": final_url,
+            "content_type": content_type
         }
 
     except requests.RequestException as e:
@@ -164,40 +175,52 @@ def check_site(url, previous):
         return {"status": "ERROR", "error": str(e)}
 
 
-def main():
-    sites = load_sites()
-    state = load_state()
+for url in sites:
+    previous = state.get(url)
+    result = check_site(url, previous)
 
-    print("\n=== Weekly Website Check ===\n")
-
-    for url in sites:
-        previous = state.get(url)
-        result = check_site(url, previous)
-
-        if result["status"] == "OK":
-            if result.get("changed"):
-                print(f"🔄 CHANGED: {url}")
+    if result["status"] == "OK":
+        if result.get("changed"):
+            print(f"🔄 CHANGED: {url}")
+            if result.get("diff_file"):
                 print(f"   ↳ Diff saved to {result['diff_file']}")
-            else:
-                print(f"✅ NO CHANGE: {url}")
-
-            state[url] = {
-                "last_checked": datetime.utcnow().isoformat(),
-                "hash": result["hash"],
-                "text": result["text"],
-                "http_status": result["http_status"],
-            }
-
         else:
-            print(f"❌ {result['status']}: {url}")
-            state[url] = {
-                "last_checked": datetime.utcnow().isoformat(),
-                "hash": None,
-                "text": None,
-                "http_status": result.get("http_status"),
-            }
+            print(f"✅ NO CHANGE: {url}")
 
-    save_state(state)
+        state[url] = {
+            "last_checked": datetime.utcnow().isoformat(),
+            "hash": result["hash"],
+            "text": result["text"],
+            "http_status": result["http_status"],
+            "final_url": result["final_url"],
+            "content_type": result["content_type"]
+        }
+
+    elif result["status"] in ("BINARY", "RESTRICTED", "BROKEN", "NOT_FOUND"):
+        print(f"❌ {result['status']}: {url} ({result.get('final_url','')})")
+        state[url] = {
+            "last_checked": datetime.utcnow().isoformat(),
+            "hash": None,
+            "text": None,
+            "http_status": result.get("http_status"),
+            "final_url": result.get("final_url"),
+            "content_type": result.get("content_type")
+        }
+
+    else:
+        # Catch-all for errors
+        print(f"⚠️ ERROR: {url} -> {result.get('error')}")
+        state[url] = {
+            "last_checked": datetime.utcnow().isoformat(),
+            "hash": None,
+            "text": None,
+            "http_status": None,
+            "final_url": None,
+            "content_type": None
+        }
+
+save_state(state)
+
 
 
 if __name__ == "__main__":
