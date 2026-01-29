@@ -74,7 +74,7 @@
 # Limping child
 	https://www.nhs.uk/conditions/limp-in-children/
 	https://www.nhs.uk/conditions/hip-pain-children-irritable-hip/
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/limp
+	https://www.healthiertogether.nhs.uk/professional/limp
 # Pain relief
 	https://www.nhs.uk/medicines/paracetamol-for-children/how-and-when-to-give-paracetamol-for-children/
 	https://www.nhs.uk/medicines/ibuprofen-for-children/how-and-when-to-give-ibuprofen-for-children/
@@ -87,28 +87,28 @@
 	https://www.nhs.uk/conditions/burns-and-scalds/
 # Febrile convulsion
 	https://www.nhs.uk/conditions/febrile-seizures/
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/febrile-convulsion-2
+	https://www.healthiertogether.nhs.uk/professional/febrile-convulsion
 # First seizure
 	https://www.nhs.uk/conditions/what-to-do-if-someone-has-a-seizure-fit/
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/fits-faints-and-funny-turns
+	https://www.healthiertogether.nhs.uk/professional/fits-faints-and-funny-turns
 # Managing temperature
 	https://www.nhs.uk/conditions/fever-in-children/
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/fever-children-under-5-years
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/fever-children-over-5-years
+	https://www.healthiertogether.nhs.uk/professional/fever
 # Constipation
 	https://www.nhs.uk/conditions/baby/health/constipation-in-children/
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/constipation
+	https://www.healthiertogether.nhs.uk/child-under-5-years/constipation
 # Chicken pox
 	https://www.nhs.uk/conditions/chickenpox/
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/chickenpox
+	https://www.healthiertogether.nhs.uk/professional/chickenpox
 # Bronchiolitis
 	https://www.nhs.uk/conditions/bronchiolitis/
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/bronchiolitis
+	https://www.healthiertogether.nhs.uk/professional/bronchiolitis
 # Croup
 	https://www.nhs.uk/conditions/croup/
+	https://www.healthiertogether.nhs.uk/professional/croup
 # Scarlet fever
 	https://www.nhs.uk/conditions/scarlet-fever/
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/strep-and-scarlet-fever
+	https://www.healthiertogether.nhs.uk/professional/strep-a-and-scarlet-fever
 # Post concussion syndrome
 	https://sportscotland.org.uk/media/o42lsjrt/concussionreport2018.pdf
 # BRUE
@@ -117,26 +117,25 @@
 	https://www.nhs.uk/conditions/hand-foot-mouth-disease/
 	https://www.healthiertogether.nhs.uk/professional/hand-foot-and-mouth-disease
 # Viral induced wheeze
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/viral-induced-wheeze
+	https://www.healthiertogether.nhs.uk/professional/viral-induced-wheeze
 # HSP
 	https://www.nhs.uk/conditions/henoch-schonlein-purpura-hsp/
+	https://www.healthiertogether.nhs.uk/professional/henoch-schonlein-purpura-hsp
 # Child bereavement
 	https://www.childbereavementuk.org/
 	https://www.petesdragons.org.uk/
-# Generic Cough Cold (Under 1)
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/coughcolds-children-under-1-year-age-advice-sheet
-# Cough Cold Over 1
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/coughcold-children-1-year-and-over-advice-sheet
+# Generic Cough Cold
+	https://www.healthiertogether.nhs.uk/professional/cough-cold
 # Crying Baby
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/crying-baby
+	https://www.healthiertogether.nhs.uk/professional/crying-baby
 # Rash (Generic)
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/fever-and-rash
+	https://www.healthiertogether.nhs.uk/professional/rash
 # Tonsilitis/Sore Throat
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/sore-throat-advice-sheet
+	https://www.healthiertogether.nhs.uk/professional/tonsillitis-sore-throat
 # Ear Ache
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/earacheotitis-media-advice-sheet
+	https://www.healthiertogether.nhs.uk/professional/otitis-media-earache
 # Otitis Externa
-	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/otitis-externa-swimming-ear-advice-sheet
+	https://www.healthiertogether.nhs.uk/professional/otitis-externa-swimming-ear
 # Depression and Low Mood
 	https://www.youngminds.org.uk/parent/parents-a-z-mental-health-guide/depression-and-low-mood/
 # Drugs and alcohol
