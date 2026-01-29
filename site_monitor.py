@@ -175,51 +175,57 @@ def check_site(url, previous):
         return {"status": "ERROR", "error": str(e)}
 
 
-for url in sites:
-    previous = state.get(url)
-    result = check_site(url, previous)
+def main():
+    sites = load_sites()   # ✅ load the list of URLs
+    state = load_state()   # ✅ load the previous state
 
-    if result["status"] == "OK":
-        if result.get("changed"):
-            print(f"🔄 CHANGED: {url}")
-            if result.get("diff_file"):
-                print(f"   ↳ Diff saved to {result['diff_file']}")
+    print("\n=== Weekly Website Check ===\n")
+
+    for url in sites:
+        previous = state.get(url)
+        result = check_site(url, previous)
+
+        if result["status"] == "OK":
+            if result.get("changed"):
+                print(f"🔄 CHANGED: {url}")
+                if result.get("diff_file"):
+                    print(f"   ↳ Diff saved to {result['diff_file']}")
+            else:
+                print(f"✅ NO CHANGE: {url}")
+
+            state[url] = {
+                "last_checked": datetime.utcnow().isoformat(),
+                "hash": result["hash"],
+                "text": result["text"],
+                "http_status": result["http_status"],
+                "final_url": result["final_url"],
+                "content_type": result["content_type"]
+            }
+
+        elif result["status"] in ("BINARY", "RESTRICTED", "BROKEN", "NOT_FOUND"):
+            print(f"❌ {result['status']}: {url} ({result.get('final_url','')})")
+            state[url] = {
+                "last_checked": datetime.utcnow().isoformat(),
+                "hash": None,
+                "text": None,
+                "http_status": result.get("http_status"),
+                "final_url": result.get("final_url"),
+                "content_type": result.get("content_type")
+            }
+
         else:
-            print(f"✅ NO CHANGE: {url}")
+            # Catch-all for errors
+            print(f"⚠️ ERROR: {url} -> {result.get('error')}")
+            state[url] = {
+                "last_checked": datetime.utcnow().isoformat(),
+                "hash": None,
+                "text": None,
+                "http_status": None,
+                "final_url": None,
+                "content_type": None
+            }
 
-        state[url] = {
-            "last_checked": datetime.utcnow().isoformat(),
-            "hash": result["hash"],
-            "text": result["text"],
-            "http_status": result["http_status"],
-            "final_url": result["final_url"],
-            "content_type": result["content_type"]
-        }
-
-    elif result["status"] in ("BINARY", "RESTRICTED", "BROKEN", "NOT_FOUND"):
-        print(f"❌ {result['status']}: {url} ({result.get('final_url','')})")
-        state[url] = {
-            "last_checked": datetime.utcnow().isoformat(),
-            "hash": None,
-            "text": None,
-            "http_status": result.get("http_status"),
-            "final_url": result.get("final_url"),
-            "content_type": result.get("content_type")
-        }
-
-    else:
-        # Catch-all for errors
-        print(f"⚠️ ERROR: {url} -> {result.get('error')}")
-        state[url] = {
-            "last_checked": datetime.utcnow().isoformat(),
-            "hash": None,
-            "text": None,
-            "http_status": None,
-            "final_url": None,
-            "content_type": None
-        }
-
-save_state(state)
+    save_state(state)
 
 
 
