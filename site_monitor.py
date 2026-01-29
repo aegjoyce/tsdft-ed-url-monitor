@@ -101,10 +101,14 @@ def check_site(url, previous):
         cleaned = clean_text(r.text)
         current_hash = text_hash(cleaned)
 
-        changed = previous and current_hash != previous["hash"]
+        changed = (
+            previous
+            and previous.get("hash")
+            and current_hash != previous["hash"]
+        )
 
         diff_file = None
-        if changed:
+        if changed and previous.get("text"):
             diff_file = save_diff(url, previous["text"], cleaned)
 
         return {
@@ -139,9 +143,9 @@ def main():
 
             state[url] = {
                 "last_checked": datetime.utcnow().isoformat(),
-                "hash": result["hash"],
-                "text": result["text"],
-                "http_status": result["http_status"],
+                "hash": None,
+                "text": None,
+                "http_status": result.get("http_status"),
             }
 
         else:
