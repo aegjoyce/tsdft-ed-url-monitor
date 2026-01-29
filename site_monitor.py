@@ -31,8 +31,12 @@ def load_sites():
 
 def load_state():
     if os.path.exists(STATE_FILE):
-        with open(STATE_FILE) as f:
-            return json.load(f)
+        try:
+            with open(STATE_FILE) as f:
+                return json.load(f)
+        except (json.JSONDecodeError, FileNotFoundError):
+            print(f"⚠️ Warning: {STATE_FILE} is corrupted or empty. Creating new baseline.")
+            return {}
     return {}
 
 
