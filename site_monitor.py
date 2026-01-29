@@ -4,6 +4,9 @@ import json
 import os
 import re
 import difflib
+import io
+import requests
+from PyPDF2 import PdfReader
 from bs4 import BeautifulSoup
 from datetime import datetime
 
@@ -79,6 +82,13 @@ def save_diff(url, old, new):
 
     return filename
 
+def pdf_to_text(url):
+    r = requests.get(url, timeout=TIMEOUT)
+    r.raise_for_status()
+    f = io.BytesIO(r.content)
+    reader = PdfReader(f)
+    text = "\n".join(page.extract_text() or "" for page in reader.pages)
+    return text
 
 def check_site(url, previous):
     try:
@@ -94,21 +104,43 @@ def check_site(url, previous):
             "Connection": "keep-alive",
         }
 
+        # Fetch the page
         r = requests.get(url, headers=headers, timeout=TIMEOUT)
         status = r.status_code
 
-        if status != 200:
+        # Handle non-200 responses
+        if status == 403:
+            return {"status": "RESTRICTED", "http_status": status}
+        elif status != 200:
             return {"status": "BROKEN", "http_status": status}
 
-        cleaned = clean_text(r.text)
+        # Determine if it's a PDF
+        content_type = r.headers.get("Content-Type", "").lower()
+        is_pdf = "application/pdf" in content_type
+
+        if is_pdf:
+            # Extract text from PDF
+            import io
+            from PyPDF2 import PdfReader
+
+            f = io.BytesIO(r.content)
+            reader = PdfReader(f)
+            cleaned = "\n".join(page.extract_text() or "" for page in reader.pages)
+        else:
+            # Clean HTML normally
+            cleaned = clean_text(r.text)
+
+        # Compute hash
         current_hash = text_hash(cleaned)
 
+        # Determine if content changed
         changed = (
             previous
             and previous.get("hash")
             and current_hash != previous["hash"]
         )
 
+        # Save diff if previous text exists
         diff_file = None
         if changed and previous.get("text"):
             diff_file = save_diff(url, previous["text"], cleaned)
@@ -123,6 +155,8 @@ def check_site(url, previous):
         }
 
     except requests.RequestException as e:
+        return {"status": "ERROR", "error": str(e)}
+    except Exception as e:
         return {"status": "ERROR", "error": str(e)}
 
 
