@@ -104,27 +104,26 @@ def check_site(url, previous):
             ),
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "en-GB,en;q=0.9",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Connection": "keep-alive",
         }
 
-        # GET request (follows redirects by default)
+        # Fetch (requests follows redirects by default)
         r = requests.get(url, headers=headers, timeout=TIMEOUT)
         status = r.status_code
         final_url = r.url
 
-        # Handle common HTTP errors
+        # Handle HTTP errors early
         if status == 403:
             return {"status": "RESTRICTED", "http_status": status, "final_url": final_url}
-        elif status in (404, 410):
+        if status in (404, 410):
             return {"status": "NOT_FOUND", "http_status": status, "final_url": final_url}
-        elif status != 200:
+        if status != 200:
             return {"status": "BROKEN", "http_status": status, "final_url": final_url}
 
-        # Detect content type
         content_type = r.headers.get("Content-Type", "").lower()
 
-        # PDF handling
+        # ---- Content handling ----
+
+        # PDF
         if "application/pdf" in content_type:
             import io
             from PyPDF2 import PdfReader
@@ -133,27 +132,42 @@ def check_site(url, previous):
             reader = PdfReader(f)
             cleaned = "\n".join(page.extract_text() or "" for page in reader.pages)
 
-        # HTML handling
+        # HTML
         elif "text/html" in content_type or "application/xhtml+xml" in content_type:
             cleaned = clean_text(r.text)
 
-        # Unsupported / binary content
+        # Everything else (Word, Excel, images, zip, etc.)
         else:
             return {
                 "status": "BINARY",
                 "http_status": status,
                 "final_url": final_url,
+                "content_type": content_type,
                 "hash": None,
-                "text": None
+                "text": None,
             }
 
-        # Compute hash
+        # ---- Decode sanity check ----
+        # If we see lots of replacement characters, decoding went wrong
+        if cleaned.count("\ufffd") > 10:
+            return {
+                "status": "DECODE_ERROR",
+                "http_status": status,
+                "final_url": final_url,
+                "content_type": content_type,
+                "hash": None,
+                "text": None,
+            }
+
+        # ---- Hash + diff ----
         current_hash = text_hash(cleaned)
 
-        # Check if content changed
-        changed = previous and previous.get("hash") and current_hash != previous["hash"]
+        changed = (
+            previous
+            and previous.get("hash")
+            and current_hash != previous["hash"]
+        )
 
-        # Save diff if previous text exists
         diff_file = None
         if changed and previous.get("text"):
             diff_file = save_diff(url, previous["text"], cleaned)
@@ -166,7 +180,7 @@ def check_site(url, previous):
             "changed": changed,
             "diff_file": diff_file,
             "final_url": final_url,
-            "content_type": content_type
+            "content_type": content_type,
         }
 
     except requests.RequestException as e:
@@ -175,9 +189,10 @@ def check_site(url, previous):
         return {"status": "ERROR", "error": str(e)}
 
 
+
 def main():
-    sites = load_sites()   # ✅ load the list of URLs
-    state = load_state()   # ✅ load the previous state
+    sites = load_sites()
+    state = load_state()
 
     print("\n=== Weekly Website Check ===\n")
 
@@ -199,33 +214,39 @@ def main():
                 "text": result["text"],
                 "http_status": result["http_status"],
                 "final_url": result["final_url"],
-                "content_type": result["content_type"]
+                "content_type": result["content_type"],
             }
 
-        elif result["status"] in ("BINARY", "RESTRICTED", "BROKEN", "NOT_FOUND"):
-            print(f"❌ {result['status']}: {url} ({result.get('final_url','')})")
+        elif result["status"] in (
+            "BINARY",
+            "DECODE_ERROR",
+            "RESTRICTED",
+            "BROKEN",
+            "NOT_FOUND",
+        ):
+            print(f"❌ {result['status']}: {url}")
             state[url] = {
                 "last_checked": datetime.utcnow().isoformat(),
                 "hash": None,
                 "text": None,
                 "http_status": result.get("http_status"),
                 "final_url": result.get("final_url"),
-                "content_type": result.get("content_type")
+                "content_type": result.get("content_type"),
             }
 
         else:
-            # Catch-all for errors
-            print(f"⚠️ ERROR: {url} -> {result.get('error')}")
+            print(f"⚠️ ERROR: {url} → {result.get('error')}")
             state[url] = {
                 "last_checked": datetime.utcnow().isoformat(),
                 "hash": None,
                 "text": None,
                 "http_status": None,
                 "final_url": None,
-                "content_type": None
+                "content_type": None,
             }
 
     save_state(state)
+
 
 
 
