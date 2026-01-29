@@ -17,7 +17,13 @@ os.makedirs(DIFF_DIR, exist_ok=True)
 
 def load_sites():
     with open(SITES_FILE) as f:
-        return [line.strip() for line in f if line.strip()]
+        sites = []
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            sites.append(line.split("#", 1)[0].strip())
+        return sites
 
 
 def load_state():
