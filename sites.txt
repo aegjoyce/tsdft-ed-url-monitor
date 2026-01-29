@@ -1,10 +1,145 @@
-https://www.nhs.uk/conditions/head-injury-and-concussion
-https://www.nhs.uk/live-well/exercise/flexibility-exercises
-https://www.nhs.uk/conditions/neck-pain-and-stiff-neck
-https://www.nhs.uk/conditions/whiplash
-https://www.nhs.uk/conditions/cuts-and-grazes
-https://www.nhs.uk/common-health-questions/accidents-first-aid-and-treatments/how-do-i-care-for-a-wound-treated-with-skin-glue
-https://www.nhs.uk/conditions/burns-and-scalds/
-https://www.nhs.uk/conditions/sprains-and-strains/
-https://www.nhs.uk/common-health-questions/accidents-first-aid-and-treatments/how-should-i-care-for-my-plaster-cast/
-https://www.torbayandsouthdevon.nhs.uk/services/fracture-clinic/
+# -- MINORS ---
+
+# Head injury - adult
+	https://www.nhs.uk/conditions/head-injury-and-concussion/
+	https://keepyourbootson.co.uk/wp-content/uploads/2023/11/HEADCASE_Essential-Guide_Aug_2023.pdf
+# Neck injury
+	https://www.nhs.uk/live-well/exercise/flexibility-exercises/
+	https://www.nhs.uk/conditions/neck-pain-and-stiff-neck/
+	https://www.nhs.uk/conditions/whiplash/
+# Wound care
+	https://www.nhs.uk/conditions/cuts-and-grazes/
+	https://www.nhs.uk/common-health-questions/accidents-first-aid-and-treatments/how-do-i-care-for-a-wound-treated-with-skin-glue/
+# Burns - adult
+	https://www.nhs.uk/conditions/burns-and-scalds/
+# Sprains
+	https://www.nhs.uk/conditions/sprains-and-strains/
+# Plaster casts
+	https://www.nhs.uk/common-health-questions/accidents-first-aid-and-treatments/how-should-i-care-for-my-plaster-cast/
+	https://www.torbayandsouthdevon.nhs.uk/services/fracture-clinic/
+# Backache
+	https://www.nhs.uk/conditions/back-pain/
+# Crutches
+	https://www.nhsinform.scot/tests-and-treatments/medicines-and-medical-aids/walking-aids/using-crutches/
+	https://www.torbayandsouthdevon.nhs.uk/services/physiotherapy/support-videos/how-to-use-crutches/
+# Shoulder injury
+	https://www.nhs.uk/conditions/shoulder-pain/
+	https://www.torbayandsouthdevon.nhs.uk/services/physiotherapy/support-videos/torbay-shoulder-exercise-programme/
+# Knee injury
+	https://www.nhs.uk/conditions/knee-pain/
+	https://www.nhs.uk/live-well/exercise/knee-pain-and-other-running-injuries/
+	https://www.nhs.uk/live-well/exercise/knee-exercises-for-runners/
+# Chest injury
+	https://www.nhs.uk/conditions/broken-or-bruised-ribs/
+	https://www.nhsinform.scot/illnesses-and-conditions/muscle-bone-and-joints/conditions/chest-and-rib-injury/
+# Eye injury
+	https://www.nhs.uk/medicines/chloramphenicol/how-and-when-to-use-chloramphenicol/
+	https://www.torbayandsouthdevon.nhs.uk/about-us/news-and-publications/information-leaflets/ophthalmology/
+# Ankle injury
+	https://www.nhs.uk/conditions/foot-pain/ankle-pain/
+# Pretibial laceration	
+# Broken collarbone
+	https://www.nhs.uk/conditions/broken-collarbone/
+# Mallet finger
+	https://www.nhs.uk/conditions/mallet-finger/
+# Broken nose
+	https://www.nhs.uk/conditions/broken-nose/
+	https://www.torbayandsouthdevon.nhs.uk/uploads/25761.pdf
+# Injured wrist
+	https://www.nhs.uk/conditions/hand-pain/wrist-pain/
+# Bleeding in early pregnancy
+	https://www.nhs.uk/pregnancy/related-conditions/common-symptoms/vaginal-bleeding/
+# Emergency department orientation	
+# Pain relief
+	https://www.nhs.uk/live-well/pain/
+	https://www.nhs.uk/medicines/ibuprofen-for-adults/how-and-when-to-take-ibuprofen/
+	https://www.nhs.uk/medicines/paracetamol-for-adults/how-and-when-to-take-paracetamol-for-adults/
+	https://www.nhs.uk/medicines/codeine/how-and-when-to-take-codeine/
+# Thumb spica
+	https://www.nhs.uk/conditions/hand-pain/thumb-pain/
+# Neighbour strapping
+	https://www.nhs.uk/conditions/broken-finger/
+# RTC	
+# Buckle fractures and soft casts
+	https://www.clinicalguidelines.scot.nhs.uk/nhsggc-guidelines/nhsggc-guidelines/emergency-medicine/buckle-fracture/#:~:text=Advice%20to%20Parents%3A,school%20after%20the%20first%20day.
+# Assess your ability to drive
+	https://www.gov.uk/guidance/general-information-assessing-fitness-to-drive
+# Physio referral
+	https://www.torbayandsouthdevon.nhs.uk/services/physiotherapy/physiotherapy-appointment-service/
+
+# --- PAEDS ---
+
+# Post-vaccination advice
+	https://www.nhs.uk/vaccinations/vaccination-tips-for-parents/
+# Limping child
+	https://www.nhs.uk/conditions/limp-in-children/
+	https://www.nhs.uk/conditions/hip-pain-children-irritable-hip/
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/limp
+# Pain relief
+	https://www.nhs.uk/medicines/paracetamol-for-children/how-and-when-to-give-paracetamol-for-children/
+	https://www.nhs.uk/medicines/ibuprofen-for-children/how-and-when-to-give-ibuprofen-for-children/
+# D&V
+	https://www.nhs.uk/conditions/diarrhoea-and-vomiting/
+	https://www.oxfordhealth.nhs.uk/publication/caring-for-your-child-with-gastroenteritis/
+# Head injury - child
+	https://cdn.ymaws.com/ukabif.org.uk/resource/resmgr/nables/concussion/1828_nables_2pp_concussion_r.pdf
+# Burns - child
+	https://www.nhs.uk/conditions/burns-and-scalds/
+# Febrile convulsion
+	https://www.nhs.uk/conditions/febrile-seizures/
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/febrile-convulsion-2
+# First seizure
+	https://www.nhs.uk/conditions/what-to-do-if-someone-has-a-seizure-fit/
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/fits-faints-and-funny-turns
+# Managing temperature
+	https://www.nhs.uk/conditions/fever-in-children/
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/fever-children-under-5-years
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/fever-children-over-5-years
+# Constipation
+	https://www.nhs.uk/conditions/baby/health/constipation-in-children/
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/constipation
+# Chicken pox
+	https://www.nhs.uk/conditions/chickenpox/
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/chickenpox
+# Bronchiolitis
+	https://www.nhs.uk/conditions/bronchiolitis/
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/bronchiolitis
+# Croup
+	https://www.nhs.uk/conditions/croup/
+# Scarlet fever
+	https://www.nhs.uk/conditions/scarlet-fever/
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/strep-and-scarlet-fever
+# Post concussion syndrome
+	https://sportscotland.org.uk/media/o42lsjrt/concussionreport2018.pdf
+# BRUE
+	https://www.lullabytrust.org.uk/safer-sleep-advice/
+# Hand foot and mouth disease
+	https://www.nhs.uk/conditions/hand-foot-mouth-disease/
+	https://www.healthiertogether.nhs.uk/professional/hand-foot-and-mouth-disease
+# Viral induced wheeze
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/viral-induced-wheeze
+# HSP
+	https://www.nhs.uk/conditions/henoch-schonlein-purpura-hsp/
+# Child bereavement
+	https://www.childbereavementuk.org/
+	https://www.petesdragons.org.uk/
+# Generic Cough Cold (Under 1)
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/coughcolds-children-under-1-year-age-advice-sheet
+# Cough Cold Over 1
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/coughcold-children-1-year-and-over-advice-sheet
+# Crying Baby
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/crying-baby
+# Rash (Generic)
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/fever-and-rash
+# Tonsilitis/Sore Throat
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/sore-throat-advice-sheet
+# Ear Ache
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/earacheotitis-media-advice-sheet
+# Otitis Externa
+	https://www.what0-18.nhs.uk/professionals/childrens-nurses/safety-netting-documents-parents/otitis-externa-swimming-ear-advice-sheet
+# Depression and Low Mood
+	https://www.youngminds.org.uk/parent/parents-a-z-mental-health-guide/depression-and-low-mood/
+# Drugs and alcohol
+	https://www.youngminds.org.uk/parent/parents-a-z-mental-health-guide/drugs-and-alcohol/
+# DSH
+	https://www.youngminds.org.uk/parent/parents-a-z-mental-health-guide/self-harm/
