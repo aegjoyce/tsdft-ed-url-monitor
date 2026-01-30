@@ -15,6 +15,7 @@ STATE_FILE = "site_state.json"
 DIFF_DIR = "diffs"
 TIMEOUT = 10
 
+# Keep diffs directory for fallback/local archive, but prefer GitHub issues when configured.
 os.makedirs(DIFF_DIR, exist_ok=True)
 
 
@@ -69,20 +70,61 @@ def text_hash(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def save_diff(url, old, new):
-    diff = difflib.unified_diff(
+def save_diff(url, old, new, final_url=None):
+    """Create a GitHub issue containing the unified diff when configured.
+
+    Falls back to saving the diff locally under `DIFF_DIR` if `GITHUB_TOKEN` or
+    `GITHUB_REPO` are not set or if the GitHub API call fails.
+    Returns either the created issue URL (when posted) or the local filename.
+    """
+    diff_lines = list(difflib.unified_diff(
         old.splitlines(),
         new.splitlines(),
         fromfile="previous",
         tofile="current",
         lineterm=""
-    )
+    ))
 
+    diff_text = "\n".join(diff_lines)
+
+    gh_token = os.environ.get("GITHUB_TOKEN")
+    gh_repo = os.environ.get("GITHUB_REPO") or os.environ.get("GITHUB_REPOSITORY")
+
+    if gh_token and gh_repo:
+        title = f"Website change detected: {url}"
+        body = (
+            f"Automated monitor detected a change for {url}\n\n"
+            f"Checked at: {datetime.utcnow().isoformat()}Z\n"
+        )
+        if final_url:
+            body += f"Final URL: {final_url}\n\n"
+        body += "Diff:\n\n```diff\n" + (diff_text or "(no diff)") + "\n```\n"
+
+        payload = {"title": title, "body": body, "labels": ["site-monitor"]}
+        headers = {
+            "Authorization": f"token {gh_token}",
+            "Accept": "application/vnd.github.v3+json",
+        }
+
+        try:
+            r = requests.post(f"https://api.github.com/repos/{gh_repo}/issues", json=payload, headers=headers, timeout=10)
+            if r.status_code in (200, 201):
+                data = r.json()
+                return data.get("html_url")
+            else:
+                # Fall back to local file save if API fails
+                print(f"⚠️ GitHub API returned {r.status_code}: falling back to local diff save")
+        except requests.RequestException as e:
+            print(f"⚠️ GitHub API error: {e}; falling back to local diff save")
+
+    # Fallback local save
     safe_name = re.sub(r"[^\w]+", "_", url)
     filename = f"{DIFF_DIR}/{safe_name}_{datetime.utcnow().date()}.diff.txt"
-
-    with open(filename, "w") as f:
-        f.write("\n".join(diff))
+    try:
+        with open(filename, "w") as f:
+            f.write(diff_text)
+    except Exception as e:
+        print(f"⚠️ Failed to write local diff file: {e}")
 
     return filename
 
@@ -170,7 +212,7 @@ def check_site(url, previous):
 
         diff_file = None
         if changed and previous.get("text"):
-            diff_file = save_diff(url, previous["text"], cleaned)
+            diff_file = save_diff(url, previous["text"], cleaned, final_url=final_url)
 
         return {
             "status": "OK",
