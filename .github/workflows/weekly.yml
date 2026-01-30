@@ -13,6 +13,7 @@ jobs:
       issues: write
 
     env:
+      MONITOR_TIMEOUT: "30"
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_REPO: ${{ github.repository }}
       GITHUB_ISSUE_MENTION: aegjoyce

@@ -9,24 +9,41 @@ import requests
 from PyPDF2 import PdfReader
 from bs4 import BeautifulSoup
 from datetime import datetime
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+from requests.exceptions import ReadTimeout
 
 SITES_FILE = "sites.txt"
 STATE_FILE = "site_state.json"
 DIFF_DIR = "diffs"
-TIMEOUT = 10
+
+# Allow adjusting the per-request timeout via env (seconds)
+TIMEOUT = int(os.environ.get("MONITOR_TIMEOUT", "10"))
+
+# Regex to find the first URL on a line (allows labels, bullets or text before URL)
+URL_RE = re.compile(r"https?://\S+")
 
 # Keep diffs directory for fallback/local archive, but prefer GitHub issues when configured.
 os.makedirs(DIFF_DIR, exist_ok=True)
+
+# requests session with retries/backoff for transient network errors
+session = requests.Session()
+retries = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504], allowed_methods=["GET", "HEAD"])
+adapter = HTTPAdapter(max_retries=retries)
+session.mount("https://", adapter)
+session.mount("http://", adapter)
 
 
 def load_sites():
     with open(SITES_FILE) as f:
         sites = []
-        for line in f:
-            line = line.strip()
+        for raw in f:
+            line = raw.strip()
             if not line or line.startswith("#"):
                 continue
-            sites.append(line.split("#", 1)[0].strip())
+            m = URL_RE.search(line)
+            if m:
+                sites.append(m.group(0))
         return sites
 
 
@@ -142,7 +159,10 @@ def save_diff(url, old, new, final_url=None):
     return filename
 
 def pdf_to_text(url):
-    r = requests.get(url, timeout=TIMEOUT)
+    try:
+        r = session.get(url, timeout=TIMEOUT)
+    except ReadTimeout:
+        raise
     r.raise_for_status()
     f = io.BytesIO(r.content)
     reader = PdfReader(f)
@@ -162,7 +182,10 @@ def check_site(url, previous):
         }
 
         # Fetch (requests follows redirects by default)
-        r = requests.get(url, headers=headers, timeout=TIMEOUT)
+        try:
+            r = session.get(url, headers=headers, timeout=TIMEOUT)
+        except ReadTimeout:
+            return {"status": "ERROR", "error": f"Read timed out (timeout={TIMEOUT})"}
         status = r.status_code
         final_url = r.url
 
