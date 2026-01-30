@@ -1,25 +1,21 @@
-# tsdft-ed-url-monitor
+# TSDFT ED Website Monitor
 
-Monitors a list of URLs and files for content changes and files a GitHub Issue when a change is detected.
+This simple tool watches websites for changes and lets the team know when something changes.
 
-What it does
-- Periodically fetches each URL in `sites.txt` (supports HTML pages and PDFs).
-- Normalises content to plain text, computes a hash, and detects differences from the last run.
-- When a change is found, creates a GitHub Issue containing a clipped unified diff of the changes. If issue creation fails the diff is saved locally to `diffs/`.
+How it works (very simply)
+- A list of websites is kept in `sites.txt`.
+- Each month the script checks those sites for any changes.
+- If something has changed, the script opens a GitHub Issue describing the change so people get notified.
 
-Repo usage notes (GitHub-first)
-- This project is intended to run on GitHub Actions only. Collaborators should edit `sites.txt` to add/remove monitored URLs.
-- To be notified by email or mention, add your GitHub username to the workflow `.github/workflows/monthly.yml` as the mention value (the workflow exposes `GITHUB_ISSUE_MENTION`).
-- No further setup is required for collaborators beyond editing those two files in the repo.
+What you need to do
+- To add or remove a site: edit `sites.txt` in this repository and add one website address per line (copy the full web address including `https://`).
+- To get personally notified: open `.github/workflows/monthly.yml` and add your GitHub username to the `GITHUB_ISSUE_MENTION` field.
 
-Quick facts
-- Schedule: the Action runs monthly (see `.github/workflows/monthly.yml`).
-- Diff storage: primary — GitHub Issues; fallback — `diffs/` directory.
-- State file: `site_state.json` stores per-site hashes between runs.
-- Dependencies: see `requirements.txt`.
+Where it runs
+- This runs automatically on GitHub once a month. No local setup is required.
 
-Troubleshooting
-- If issues are saved to `diffs/` instead of created, check the Action logs for API errors and ensure the repo has Issues enabled and the workflow has `issues: write` permission.
-- If a site is slow or times out, increase the `MONITOR_TIMEOUT` environment variable in the workflow.
+If something goes wrong
+- If an issue is not created the change is still saved in the `diffs/` folder so someone can look at it.
+- If you need help editing files or getting notifications, open an Issue in this repo and someone will help.
 
-If you want, I can: add an example `sites.txt`, add a simple unit test for `load_sites()`, or add a lint step to CI. Tell me which and I'll implement it.
+That's it — simple: add a site, add yourself to the workflow to get mentioned, and the monitor will do the rest.
