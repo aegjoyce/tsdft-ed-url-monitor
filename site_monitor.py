@@ -74,9 +74,11 @@ def clean_text(html):
     # - Remove elements with class/id/aria-label hints like 'sidebar', 'toc', 'floating-nav'
     # - Remove elements explicitly marked with role="navigation"
     for tag in soup.find_all(True):
-        style = (tag.get("style") or "").lower()
-        classes = " ".join(tag.get("class") or [])
-        ident = " ".join([str(tag.get("id") or ""), str(tag.get("aria-label") or "")])
+        # guard against non-standard elements that may not have attrs set
+        attrs = getattr(tag, "attrs", None) or {}
+        style = (attrs.get("style") or "").lower()
+        classes = " ".join(attrs.get("class") or [])
+        ident = " ".join([str(attrs.get("id") or ""), str(attrs.get("aria-label") or "")])
 
         if "position:fixed" in style or "position:sticky" in style:
             tag.decompose()
@@ -90,7 +92,7 @@ def clean_text(html):
             tag.decompose()
             continue
 
-        if tag.get("role") == "navigation":
+        if attrs.get("role") == "navigation":
             tag.decompose()
             continue
 
