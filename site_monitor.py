@@ -71,8 +71,25 @@ def clean_text(html):
 
     text = soup.get_text(separator="\n")
 
-    # Normalize whitespace
-    text = re.sub(r"\s+", " ", text)
+    # Normalize line endings and preserve paragraph structure.
+    # Collapse repeated spaces within lines but keep newlines so diffs are
+    # computed per logical line instead of creating one very long line.
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    lines = [re.sub(r"[ \t]+", " ", line).strip() for line in text.split("\n")]
+
+    # Collapse consecutive empty lines into a single blank line
+    normalized_lines = []
+    prev_empty = False
+    for line in lines:
+        if not line:
+            if not prev_empty:
+                normalized_lines.append("")
+            prev_empty = True
+        else:
+            normalized_lines.append(line)
+            prev_empty = False
+
+    text = "\n".join(normalized_lines)
 
     # Remove dates, times, counters (basic but effective)
     text = re.sub(r"\b\d{1,2}:\d{2}\b", "", text)      # times
