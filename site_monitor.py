@@ -77,12 +77,15 @@ def save_diff(url, old, new, final_url=None):
     `GITHUB_REPO` are not set or if the GitHub API call fails.
     Returns either the created issue URL (when posted) or the local filename.
     """
+    # Clip diffs to only the changed hunks (no surrounding context) to keep
+    # issue bodies concise. `n=0` removes context lines.
     diff_lines = list(difflib.unified_diff(
         old.splitlines(),
         new.splitlines(),
         fromfile="previous",
         tofile="current",
-        lineterm=""
+        n=0,
+        lineterm="\n",
     ))
 
     diff_text = "\n".join(diff_lines)
@@ -90,9 +93,22 @@ def save_diff(url, old, new, final_url=None):
     gh_token = os.environ.get("GITHUB_TOKEN")
     gh_repo = os.environ.get("GITHUB_REPO") or os.environ.get("GITHUB_REPOSITORY")
 
+    # Optional: mention users or assign owners so they receive notifications.
+    # - `GITHUB_ISSUE_MENTION`: comma-separated GitHub usernames (with or without @)
+    # - `GITHUB_ISSUE_ASSIGNEES`: comma-separated usernames to assign the issue to
+    mention = os.environ.get("GITHUB_ISSUE_MENTION")
+    assignees_env = os.environ.get("GITHUB_ISSUE_ASSIGNEES")
+    assignees = [a.strip() for a in assignees_env.split(",") if a.strip()] if assignees_env else None
+
     if gh_token and gh_repo:
         title = f"Website change detected: {url}"
-        body = (
+        body = ""
+        if mention:
+            # Ensure mentions are prefixed with @
+            mentions = " ".join([m if m.startswith("@") else f"@{m}" for m in re.split(r"\s*,\s*", mention)])
+            body += mentions + "\n\n"
+
+        body += (
             f"Automated monitor detected a change for {url}\n\n"
             f"Checked at: {datetime.utcnow().isoformat()}Z\n"
         )
@@ -101,6 +117,8 @@ def save_diff(url, old, new, final_url=None):
         body += "Diff:\n\n```diff\n" + (diff_text or "(no diff)") + "\n```\n"
 
         payload = {"title": title, "body": body, "labels": ["site-monitor"]}
+        if assignees:
+            payload["assignees"] = assignees
         headers = {
             "Authorization": f"token {gh_token}",
             "Accept": "application/vnd.github.v3+json",
