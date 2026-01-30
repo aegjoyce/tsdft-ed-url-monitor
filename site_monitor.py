@@ -93,12 +93,9 @@ def save_diff(url, old, new, final_url=None):
     gh_token = os.environ.get("GITHUB_TOKEN")
     gh_repo = os.environ.get("GITHUB_REPO") or os.environ.get("GITHUB_REPOSITORY")
 
-    # Optional: mention users or assign owners so they receive notifications.
+    # Optional: mention users so they receive notifications.
     # - `GITHUB_ISSUE_MENTION`: comma-separated GitHub usernames (with or without @)
-    # - `GITHUB_ISSUE_ASSIGNEES`: comma-separated usernames to assign the issue to
     mention = os.environ.get("GITHUB_ISSUE_MENTION")
-    assignees_env = os.environ.get("GITHUB_ISSUE_ASSIGNEES")
-    assignees = [a.strip() for a in assignees_env.split(",") if a.strip()] if assignees_env else None
 
     if gh_token and gh_repo:
         title = f"Website change detected: {url}"
@@ -117,8 +114,6 @@ def save_diff(url, old, new, final_url=None):
         body += "Diff:\n\n```diff\n" + (diff_text or "(no diff)") + "\n```\n"
 
         payload = {"title": title, "body": body, "labels": ["site-monitor"]}
-        if assignees:
-            payload["assignees"] = assignees
         headers = {
             "Authorization": f"token {gh_token}",
             "Accept": "application/vnd.github.v3+json",
