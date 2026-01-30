@@ -271,7 +271,7 @@ def main():
     sites = load_sites()
     state = load_state()
 
-    print("\n=== Weekly Website Check ===\n")
+    print("\n=== Monthly Website Check ===\n")
 
     for url in sites:
         previous = state.get(url)
