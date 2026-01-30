@@ -1,8 +1,8 @@
-name: Weekly website monitor
+name: Monthly website monitor
 
 on:
   schedule:
-    - cron: "0 9 * * 1"   # Mondays 09:00 UTC
+    - cron: "0 9 1 * *"   # 1st of month 09:00 UTC
   workflow_dispatch:     # allow manual runs
 
 jobs:

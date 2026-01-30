@@ -5,7 +5,6 @@ import os
 import re
 import difflib
 import io
-import requests
 from PyPDF2 import PdfReader
 from bs4 import BeautifulSoup
 from datetime import datetime
