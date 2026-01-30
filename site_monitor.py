@@ -86,6 +86,57 @@ def text_hash(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def compact_diff(old_text, new_text, context=2, max_hunks=20):
+    """Return a compact diff showing only changed hunks with a small context.
+
+    - `context` lines of context before/after each change are included.
+    - `max_hunks` limits the number of hunks shown to avoid enormous issue bodies.
+    """
+    old_lines = old_text.splitlines()
+    new_lines = new_text.splitlines()
+    matcher = difflib.SequenceMatcher(a=old_lines, b=new_lines)
+
+    hunks = []
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "equal":
+            continue
+        # expand the hunk by the context window, but keep within bounds
+        start_old = max(i1 - context, 0)
+        end_old = min(i2 + context, len(old_lines))
+        start_new = max(j1 - context, 0)
+        end_new = min(j2 + context, len(new_lines))
+
+        hunk_old = old_lines[start_old:end_old]
+        hunk_new = new_lines[start_new:end_new]
+        hunks.append((start_old, end_old, start_new, end_new, hunk_old, hunk_new))
+        if len(hunks) >= max_hunks:
+            break
+
+    if not hunks:
+        return "(no diff)"
+
+    out_lines = []
+    for idx, (so, eo, sn, en, h_old, h_new) in enumerate(hunks):
+        out_lines.append(f"@@ HUNK {idx+1} (old:{so}-{eo} new:{sn}-{en}) @@")
+        # show old (removed) lines
+        for i, line in enumerate(h_old, start=so):
+            # mark lines that are not present in the new hunk
+            if i < (eo - context) and (i < eo and (i - so) < len(h_old)):
+                pass
+            out_lines.append("- " + line)
+
+        # show new (added) lines
+        for j, line in enumerate(h_new, start=sn):
+            out_lines.append("+ " + line)
+
+        out_lines.append("")
+
+    if len(hunks) >= max_hunks:
+        out_lines.append("... (more changes omitted) ...")
+
+    return "\n".join(out_lines)
+
+
 def save_diff(url, old, new, final_url=None):
     """Create a GitHub issue containing the unified diff when configured.
 
@@ -93,18 +144,8 @@ def save_diff(url, old, new, final_url=None):
     `GITHUB_REPO` are not set or if the GitHub API call fails.
     Returns either the created issue URL (when posted) or the local filename.
     """
-    # Clip diffs to only the changed hunks (no surrounding context) to keep
-    # issue bodies concise. `n=0` removes context lines.
-    diff_lines = list(difflib.unified_diff(
-        old.splitlines(),
-        new.splitlines(),
-        fromfile="previous",
-        tofile="current",
-        n=0,
-        lineterm="\n",
-    ))
-
-    diff_text = "\n".join(diff_lines)
+    # Build a compact diff: only changed hunks with a small context window.
+    diff_text = compact_diff(old, new, context=2, max_hunks=30)
 
     gh_token = os.environ.get("GITHUB_TOKEN")
     gh_repo = os.environ.get("GITHUB_REPO") or os.environ.get("GITHUB_REPOSITORY")
