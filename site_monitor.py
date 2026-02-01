@@ -108,6 +108,15 @@ def clean_text(html):
             tag.decompose()
             continue
 
+    # --- Remove dynamic NHS "Local Services" blocks ---
+    for h in soup.find_all(["h2", "h3"]):
+        if h.get_text(strip=True).lower() == "local services":
+            for sib in list(h.next_siblings):
+                if getattr(sib, "name", None) in ("h2", "h3"):
+                    break
+                sib.decompose()
+            h.decompose()
+
     root = extract_main(soup)
     text = root.get_text(separator="\n")
 
