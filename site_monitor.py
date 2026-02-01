@@ -140,6 +140,18 @@ def clean_text(html):
 
     text = "\n".join(normalized_lines)
 
+    # --- Remove dynamic NHS Local Services boilerplate ---
+    DYNAMIC_PATTERNS = [
+        r"^Local Services$",
+        r"^No items found\.$",
+        r"^Additional information and support may be accessed through local organisations.*$",
+    ]
+    
+    lines = [line for line in text.splitlines()
+             if not any(re.search(p, line, re.I) for p in DYNAMIC_PATTERNS)]
+    
+    text = "\n".join(lines)
+
     # Remove times and dates
     text = re.sub(r"\b\d{1,2}:\d{2}(:\d{2})?\b", "", text)
     text = re.sub(r"\b\d{4}-\d{2}-\d{2}\b", "", text)
