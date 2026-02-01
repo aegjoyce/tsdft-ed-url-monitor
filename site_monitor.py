@@ -32,6 +32,12 @@ adapter = HTTPAdapter(max_retries=retries)
 session.mount("https://", adapter)
 session.mount("http://", adapter)
 
+def content_fingerprint(text):
+    lines = [
+        line for line in text.splitlines()
+        if len(line) > 40  # ignore nav/boilerplate fragments
+    ]
+    return text_hash("\n".join(lines))
 
 def load_sites():
     with open(SITES_FILE) as f:
@@ -61,6 +67,12 @@ def save_state(state):
     with open(STATE_FILE, "w") as f:
         json.dump(state, f, indent=2)
 
+def extract_main(soup):
+    for selector in ("main", "article", "#content", ".content", ".main"):
+        node = soup.select_one(selector)
+        if node:
+            return node
+    return soup.body or soup
 
 def clean_text(html):
     soup = BeautifulSoup(html, "html.parser")
@@ -73,7 +85,7 @@ def clean_text(html):
     # - Remove elements with inline styles indicating fixed or sticky positioning
     # - Remove elements with class/id/aria-label hints like 'sidebar', 'toc', 'floating-nav'
     # - Remove elements explicitly marked with role="navigation"
-    for tag in soup.find_all(True):
+    for tag in list(soup.find_all(True)):
         # guard against non-standard elements that may not have attrs set
         attrs = getattr(tag, "attrs", None) or {}
         style = (attrs.get("style") or "").lower()
@@ -96,7 +108,8 @@ def clean_text(html):
             tag.decompose()
             continue
 
-    text = soup.get_text(separator="\n")
+    root = extract_main(soup)
+    text = root.get_text(separator="\n")
 
     # Normalize line endings and preserve paragraph structure.
     # Collapse repeated spaces within lines but keep newlines so diffs are
@@ -118,10 +131,17 @@ def clean_text(html):
 
     text = "\n".join(normalized_lines)
 
-    # Remove dates, times, counters (basic but effective)
-    text = re.sub(r"\b\d{1,2}:\d{2}\b", "", text)      # times
-    text = re.sub(r"\b\d{4}-\d{2}-\d{2}\b", "", text) # ISO dates
-    text = re.sub(r"\b\d+\b", "", text)               # numbers
+    # Remove times and dates
+    text = re.sub(r"\b\d{1,2}:\d{2}(:\d{2})?\b", "", text)
+    text = re.sub(r"\b\d{4}-\d{2}-\d{2}\b", "", text)
+
+    # Remove UI counters
+    text = re.sub(
+        r"\b(page|pages|views|updated|last updated)\s*\d+\b",
+        "",
+        text,
+        flags=re.I
+    )
 
     return text.strip()
 
@@ -322,13 +342,22 @@ def check_site(url, previous):
             }
 
         # ---- Hash + diff ----
-        current_hash = text_hash(cleaned)
+        current_hash = content_fingerprint(cleaned)
 
-        changed = (
-            previous
-            and previous.get("hash")
-            and current_hash != previous["hash"]
-        )
+        changed = False
+
+        if previous and previous.get("hash") and current_hash != previous["hash"]:
+            old_text = previous.get("text", "")
+            new_text = cleaned
+
+            similarity = difflib.SequenceMatcher(
+                None,
+                old_text,
+                new_text
+            ).ratio()
+
+            # Only treat as changed if enough text actually differs
+            changed = similarity < 0.985
 
         diff_file = None
         if changed and previous.get("text"):
